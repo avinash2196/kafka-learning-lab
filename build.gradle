@@ -3,7 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
-group 'org.demo'
+group 'org.kafkalab'
 version '1.0-SNAPSHOT'
 
 repositories {
