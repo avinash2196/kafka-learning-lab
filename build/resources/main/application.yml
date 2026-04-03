@@ -1,8 +1,11 @@
 spring:
   kafka:
     consumer:
+      # Local Kafka broker endpoint used for demo runs.
       bootstrap-servers: localhost:9092
+      # Consumer group controls how messages are shared among consumers.
       group-id: group_id
+      # Start from earliest offset so learners can replay topic history.
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
