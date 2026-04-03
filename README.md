@@ -51,7 +51,7 @@ Many production systems use asynchronous messaging to decouple services and impr
 
 1. Client sends POST to /api/messages
 2. Controller validates payload
-3. Service publishes payload to Kafka topic companies
+3. Service publishes payload to the configured Kafka topic (default: `companies`, set via `learning-lab.kafka.topic-name`)
 4. Service stores the same payload in H2
 5. Consumer receives event asynchronously and logs metadata
 6. Client can GET /api/messages to inspect stored records
@@ -65,7 +65,7 @@ MessageController
   |
   v
 MessageService
-  |------------------> KafkaMessageProducer ----> Kafka Topic (companies)
+  |------------------> KafkaMessageProducer ----> Kafka Topic (configurable via learning-lab.kafka.topic-name, default: companies)
   |
   v
 KafkaMessageRepository ----> H2 (in-memory)
@@ -73,7 +73,7 @@ KafkaMessageRepository ----> H2 (in-memory)
   v
 GET /api/messages response
 
-KafkaMessageConsumer <---- Kafka Topic (companies)
+KafkaMessageConsumer <---- Kafka Topic (configurable via learning-lab.kafka.topic-name, default: companies)
 
 ### Design and trade-off notes
 
