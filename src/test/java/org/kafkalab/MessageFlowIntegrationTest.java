@@ -18,10 +18,15 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Exercises the main tutorial flow against the Spring context with an embedded Kafka broker.
+ * Exercises the main tutorial flow against the Spring context with an embedded
+ * Kafka broker.
  *
- * <p>This test demonstrates a practical middle ground between isolated unit tests and full manual
- * testing. It verifies that the HTTP API, service, repository, and Kafka wiring work together.</p>
+ * <p>
+ * This test demonstrates a practical middle ground between isolated unit tests
+ * and full manual
+ * testing. It verifies that the HTTP API, service, repository, and Kafka wiring
+ * work together.
+ * </p>
  */
 @SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 @AutoConfigureMockMvc
@@ -42,8 +47,8 @@ class MessageFlowIntegrationTest {
     @Test
     void publishMessageShouldStoreMessageAndExposeItThroughReadEndpoint() throws Exception {
         mockMvc.perform(post("/api/messages")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"data\":\"integration message\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"data\":\"integration message\"}"))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.data").value("integration message"))
                 .andExpect(jsonPath("$.topicName").value("companies"));
@@ -54,22 +59,22 @@ class MessageFlowIntegrationTest {
                 .andExpect(jsonPath("$[0].data").value("integration message"));
     }
 
-            @Test
-            void publishingMultipleMessagesShouldReturnOrderedStoredRecords() throws Exception {
-            mockMvc.perform(post("/api/messages")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"data\":\"first\"}"))
+    @Test
+    void publishingMultipleMessagesShouldReturnOrderedStoredRecords() throws Exception {
+        mockMvc.perform(post("/api/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"data\":\"first\"}"))
                 .andExpect(status().isAccepted());
 
-            mockMvc.perform(post("/api/messages")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"data\":\"second\"}"))
+        mockMvc.perform(post("/api/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"data\":\"second\"}"))
                 .andExpect(status().isAccepted());
 
-            mockMvc.perform(get("/api/messages"))
+        mockMvc.perform(get("/api/messages"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].data", is("first")))
                 .andExpect(jsonPath("$[1].data", is("second")));
-            }
+    }
 }

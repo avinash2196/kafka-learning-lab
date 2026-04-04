@@ -24,60 +24,58 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(MessageController.class)
 class MessageControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private MessageService messageService;
+        @MockBean
+        private MessageService messageService;
 
-    @Test
+        @Test
         void givenValidPayload_whenPublishMessage_thenReturnsAcceptedResponse() throws Exception {
-        PublishedMessageResponse response = new PublishedMessageResponse(
-                1L,
-                "hello kafka",
-                "companies",
-                Instant.parse("2026-04-02T10:15:30Z"),
-                "Message published to Kafka and stored in H2"
-        );
+                PublishedMessageResponse response = new PublishedMessageResponse(
+                                1L,
+                                "hello kafka",
+                                "companies",
+                                Instant.parse("2026-04-02T10:15:30Z"),
+                                "Message published to Kafka and stored in H2");
 
-        when(messageService.publishMessage(any(PublishMessageRequest.class))).thenReturn(response);
+                when(messageService.publishMessage(any(PublishMessageRequest.class))).thenReturn(response);
 
-        mockMvc.perform(post("/api/messages")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"data\":\"hello kafka\"}"))
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.data").value("hello kafka"))
-                .andExpect(jsonPath("$.topicName").value("companies"));
+                mockMvc.perform(post("/api/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"data\":\"hello kafka\"}"))
+                                .andExpect(status().isAccepted())
+                                .andExpect(jsonPath("$.id").value(1))
+                                .andExpect(jsonPath("$.data").value("hello kafka"))
+                                .andExpect(jsonPath("$.topicName").value("companies"));
 
-        verify(messageService).publishMessage(any(PublishMessageRequest.class));
-    }
+                verify(messageService).publishMessage(any(PublishMessageRequest.class));
+        }
 
-    @Test
+        @Test
         void givenBlankPayload_whenPublishMessage_thenReturnsBadRequest() throws Exception {
-        mockMvc.perform(post("/api/messages")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"data\":\"\"}"))
-                .andExpect(status().isBadRequest());
-    }
+                mockMvc.perform(post("/api/messages")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"data\":\"\"}"))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
+        @Test
         void givenMissingField_whenPublishMessage_thenReturnsBadRequest() throws Exception {
                 mockMvc.perform(post("/api/messages")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .content("{}"))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}"))
                                 .andExpect(status().isBadRequest());
         }
 
         @Test
         void givenStoredMessages_whenListMessages_thenReturnsOkWithPayload() throws Exception {
                 when(messageService.listStoredMessages()).thenReturn(List.of(
-                new StoredMessageResponse(1L, "hello kafka", Instant.parse("2026-04-02T10:15:30Z"))
-        ));
+                                new StoredMessageResponse(1L, "hello kafka", Instant.parse("2026-04-02T10:15:30Z"))));
 
-        mockMvc.perform(get("/api/messages"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].data").value("hello kafka"));
-    }
+                mockMvc.perform(get("/api/messages"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$[0].id").value(1))
+                                .andExpect(jsonPath("$[0].data").value("hello kafka"));
+        }
 }
